@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Form from './form.svelte';
+	import '../styles.css';
 
 	let authmode: 'signin' | 'signup' = 'signin';
 </script>
