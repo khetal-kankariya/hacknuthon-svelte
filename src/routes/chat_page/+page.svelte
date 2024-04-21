@@ -11,7 +11,6 @@
 	let userRole: 1 | 2 = $state(1);
 	let useMode: 'train' | 'interview' | null = $state(null);
 	let isUseModeChosen = $state(false);
-	let avatarSize = $state(700);
 
 	let questions: string[] = $state([
 		'For what job post you are hiring for?',
@@ -20,6 +19,7 @@
 	let responses: string[] = $state([]);
 
 	let chats: { text: string; type: 'question' | 'response' }[] = $state([]);
+	let avatarSize = $state(700 - chats.length * 100);
 
 	let ques_resp_obj: Object;
 	let numberOfQuestionsAsked = 0;
@@ -114,12 +114,13 @@
 			if (chats[chats.length - 1].text.toLowerCase() == 'stop') {
 				chatSubmit();
 			}
+			if (questions.length == 0) sendChat('question', 'Next question');
+
 			if (questions.length != 0) {
 				sendChat('question', questions[0]);
 			}
-
-			if (questions.length == 0) sendChat('question', 'Next question');
 		}
+		avatarSize = chats.length < 4 ? 700 - chats.length * 100 : 400;
 	});
 
 	$effect(() => {
@@ -155,10 +156,12 @@
 			<Button variant="default" class="mx-auto  rounded-xl px-8" type="submit">Let's begin</Button>
 		</form>
 	{:else}
-		<div class="flex h-screen w-screen flex-col">
+		<div class="flex h-screen max-h-screen w-screen flex-col p-8">
 			<div class="_avatar w-full flex-[4] items-end transition-all" class:flex-\[2\]={chatStarted}>
 				<div class="flex w-full items-end justify-center">
-					<video src="alhamdulillah.mp4" autoplay loop width={avatarSize} muted></video>
+					{#key avatarSize}
+						<video src="alhamdulillah.mp4" autoplay loop width={avatarSize} muted></video>
+					{/key}
 				</div>
 			</div>
 
@@ -166,7 +169,7 @@
 				<Button class="mx-auto w-52 rounded-xl" onclick={startChat}>Start Chat</Button>
 			{:else}
 				<!-- Chats -->
-				<div class="mx-auto w-4/5" transition:slide={{ axis: 'y' }}>
+				<div class="mx-auto max-h-[600] w-4/5 overflow-y-auto" transition:slide={{ axis: 'y' }}>
 					{#each chats as chat}
 						<div
 							class="chat"
